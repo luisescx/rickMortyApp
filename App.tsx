@@ -1,21 +1,23 @@
 import 'react-native-gesture-handler';
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
+import {ThemeProvider} from 'styled-components/native';
+import theme from '@/styles/themes';
+import Navigation from '@/navigations';
+
+const client = new ApolloClient({
+  uri: 'https://rickandmortyapi.com/graphql',
+  cache: new InMemoryCache(),
+});
 
 const App = () => {
   return (
-    <View style={styles.container}>
-      <Text>Ricky and Morty App</Text>
-    </View>
+    <ApolloProvider client={client}>
+      <ThemeProvider theme={theme}>
+        <Navigation />
+      </ThemeProvider>
+    </ApolloProvider>
   );
 };
 
 export default App;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
