@@ -6,6 +6,7 @@ export const Container = styled.View`
   background-color: #1f7476;
   flex-direction: row;
   border-radius: 5px;
+  flex: 1;
 `;
 
 const InputFieldAttrs = ({theme}: any) => ({

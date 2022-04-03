@@ -1,12 +1,13 @@
-import React, {useCallback, useMemo, useRef, useState} from 'react';
-import {Alert, TextInput, TextInputProps} from 'react-native';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {TextInput, TextInputProps} from 'react-native';
 import {Container, InputButton, InputField, InputIcon} from './styles';
 
 interface InputProps extends TextInputProps {
   handleInputSearch: (value: string) => void;
+  isValueEmpty: boolean;
 }
 
-const Input = ({handleInputSearch, ...rest}: InputProps) => {
+const Input = ({handleInputSearch, isValueEmpty, ...rest}: InputProps) => {
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef<TextInput>(null);
 
@@ -15,15 +16,15 @@ const Input = ({handleInputSearch, ...rest}: InputProps) => {
   }, [inputValue]);
 
   const handleSearch = useCallback(() => {
-    if (inputValue === '') {
-      Alert.alert('Type a valid Name before confirming your search');
-      return;
-    }
-
     inputRef.current!.blur();
-    setInputValue('');
     handleInputSearch(inputValue);
   }, [handleInputSearch, inputValue]);
+
+  useEffect(() => {
+    if (isValueEmpty) {
+      setInputValue('');
+    }
+  }, [isValueEmpty]);
 
   return (
     <Container>
