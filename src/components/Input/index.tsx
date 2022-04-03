@@ -1,12 +1,12 @@
 import React, {useCallback, useMemo, useRef, useState} from 'react';
-import {Alert, TextInput} from 'react-native';
+import {Alert, TextInput, TextInputProps} from 'react-native';
 import {Container, InputButton, InputField, InputIcon} from './styles';
 
-interface InputProps {
+interface InputProps extends TextInputProps {
   handleInputSearch: (value: string) => void;
 }
 
-const Input = ({handleInputSearch}: InputProps) => {
+const Input = ({handleInputSearch, ...rest}: InputProps) => {
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef<TextInput>(null);
 
@@ -28,8 +28,8 @@ const Input = ({handleInputSearch}: InputProps) => {
   return (
     <Container>
       <InputField
+        {...rest}
         ref={inputRef}
-        placeholder="Name"
         value={inputValue}
         onChangeText={setInputValue}
         autoCapitalize="none"
