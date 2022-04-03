@@ -1,5 +1,6 @@
 const colors = {
   primary: '#1F7476',
+  primary_light: `${'rgba(31, 116, 118, 0.6)'}`,
   secondary: '#F0e14A',
   secondary_light: `${'rgba(240, 225, 74, 0.6)'}`,
   background: '#040809',
