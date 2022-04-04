@@ -1,7 +1,17 @@
-import styled from 'styled-components/native';
+import styled, {css} from 'styled-components/native';
 
-export const Container = styled.View`
+interface ContainerProps {
+  isFullScreen: boolean;
+}
+
+export const Container = styled.View<ContainerProps>`
   align-items: center;
   justify-content: center;
   padding-bottom: 16px;
+
+  ${({isFullScreen}) =>
+    isFullScreen &&
+    css`
+      flex: 1;
+    `}
 `;

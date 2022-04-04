@@ -5,10 +5,15 @@ import {useTheme} from 'styled-components/native';
 
 interface LoadingProps {
   isLoading: boolean;
+  isFullScreen?: boolean;
   size?: 'small' | 'large';
 }
 
-const Loading = ({isLoading, size = 'small'}: LoadingProps) => {
+const Loading = ({
+  isLoading,
+  size = 'small',
+  isFullScreen = false,
+}: LoadingProps) => {
   const {colors} = useTheme();
 
   if (!isLoading) {
@@ -16,7 +21,7 @@ const Loading = ({isLoading, size = 'small'}: LoadingProps) => {
   }
 
   return (
-    <Container>
+    <Container isFullScreen={isFullScreen}>
       <ActivityIndicator size={size} color={colors.secondary} />
     </Container>
   );
