@@ -210,7 +210,7 @@ const Episodes = () => {
         visible={visible}
         onDismiss={handleCloseModal}
         hasFlatlist={true}>
-        <CharactersModal characters={characters} />
+        <CharactersModal characters={characters} onClose={handleCloseModal} />
       </ModalStyled>
     </Container>
   );

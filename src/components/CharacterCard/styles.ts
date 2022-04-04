@@ -24,8 +24,9 @@ export const Container = styled.TouchableOpacity.attrs(
   margin-right: ${({index}) => (index % 2 === 0 ? 16 : 0)}px;
 `;
 
-export const Content = styled.View`
-  background: ${({theme}) => theme.colors.secondary};
+export const Content = styled.View<StyleProps>`
+  background: ${({theme, isOnModal}) =>
+    isOnModal ? theme.colors.secondary : theme.colors.primary};
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   padding: 0 0 0px;

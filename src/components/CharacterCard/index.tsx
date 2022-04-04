@@ -24,7 +24,7 @@ const CharacterCard = ({
 }: Props) => {
   return (
     <Container {...rest} activeOpacity={isOnModal ? 1 : 0.7} index={index}>
-      <Content>
+      <Content isOnModal={isOnModal}>
         <CharacterImage
           source={{
             uri: imageUri,

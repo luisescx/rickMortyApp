@@ -216,7 +216,7 @@ const Characters = () => {
         visible={visible}
         onDismiss={handleCloseModal}
         hasFlatlist={true}>
-        <DetailModal character={selectedCharacter} />
+        <DetailModal character={selectedCharacter} onClose={handleCloseModal} />
       </ModalStyled>
     </Container>
   );

@@ -2,12 +2,14 @@ import React, {useCallback} from 'react';
 import EpisodeItem from '@/scenes/Episodes/components/EpisodeItem';
 import {FlatList} from 'react-native';
 import {OptionContainer, SubTitle, Title} from './styles';
+import {Footer} from '@/components';
 
 interface DetailModalProps {
   character: Character;
+  onClose: () => void;
 }
 
-const DetailModal = ({character}: DetailModalProps) => {
+const DetailModal = ({character, onClose}: DetailModalProps) => {
   const {name, episode, location} = character;
 
   const renderItem = useCallback(
@@ -30,10 +32,13 @@ const DetailModal = ({character}: DetailModalProps) => {
           showsVerticalScrollIndicator={false}
           renderItem={renderItem}
           contentContainerStyle={{
+            flexGrow: 1,
             paddingHorizontal: 24,
           }}
         />
       </OptionContainer>
+
+      <Footer onPress={onClose} label="Close" />
     </>
   );
 };

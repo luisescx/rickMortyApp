@@ -1,13 +1,14 @@
 import React, {useCallback} from 'react';
-import {CharacterCard} from '@/components';
+import {CharacterCard, Footer} from '@/components';
 import {FlatList} from 'react-native';
 import {OptionContainer, Title} from './styles';
 
 interface CharactersModalProps {
   characters: Character[];
+  onClose: () => void;
 }
 
-const CharactersModal = ({characters}: CharactersModalProps) => {
+const CharactersModal = ({characters, onClose}: CharactersModalProps) => {
   const renderItem = useCallback(
     ({item, index}) => (
       <CharacterCard
@@ -32,10 +33,13 @@ const CharactersModal = ({characters}: CharactersModalProps) => {
           showsVerticalScrollIndicator={false}
           renderItem={renderItem}
           contentContainerStyle={{
+            flexGrow: 1,
             paddingHorizontal: 24,
           }}
         />
       </OptionContainer>
+
+      <Footer onPress={onClose} label="Close" />
     </>
   );
 };

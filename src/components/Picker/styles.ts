@@ -4,11 +4,6 @@ import styled, {css} from 'styled-components/native';
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const WIDTH = (SCREEN_WIDTH - 24 * 2 - 16) / 2;
 
-export const Modal = styled.View`
-  justify-content: flex-end;
-  margin: 0;
-`;
-
 export const ModalContainer = styled.View`
   background-color: ${({theme}) => theme.colors.primary};
   border-top-left-radius: 8px;
