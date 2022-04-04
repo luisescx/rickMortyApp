@@ -73,7 +73,6 @@ const Characters = () => {
   );
 
   const handleRender = useCallback(() => {
-    console.log(info.next);
     if (orderById === 1 && info.next) {
       setPage(info.next);
       return;

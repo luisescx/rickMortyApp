@@ -54,5 +54,4 @@ export const Footer = styled.View<StyleProps>`
   width: 100%;
   align-items: center;
   padding: 4px 0;
-  margin-top: -7px;
 `;

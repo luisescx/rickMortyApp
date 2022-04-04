@@ -47,10 +47,10 @@ const MainNavigation = () => {
       tabBarStyle: {
         height: os?.height,
         paddingVertical: os?.paddingVertical,
-        backgroundColor: colors.background_light,
+        backgroundColor: colors.background,
       },
     };
-  }, [colors.background_light]);
+  }, [colors.background]);
 
   const options = useCallback(
     (screen: 'characters' | 'episodes'): BottomTabNavigationOptions => {
