@@ -12,19 +12,25 @@ import {Filter, Input, Loading, ModalStyled} from '@/components';
 import EpisodeItem from './components/EpisodeItem';
 import CharactersModal from './components/CharactersModal';
 import episodesQuery from '@/graphql/query/episodes';
+import {useEpisodes} from '@/hooks';
 
 const Episodes = () => {
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [episodeName, setEpisodeName] = useState('');
-  const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [characters, setCharacters] = useState<Character[]>([]);
   const [orderById, setOrderById] = useState(1);
   const [visible, setIsVisible] = useState(false);
+  const [info, setInfo] = useState<Info>({
+    count: 0,
+    next: 0,
+    pages: 1,
+    prev: 0,
+  });
 
   const {colors} = useTheme();
+  const {episodes, handleEpisodes} = useEpisodes();
 
-  const {data, loading} = useQuery(episodesQuery, {
+  const {data, loading} = useQuery<EpisodeQuery>(episodesQuery, {
     variables: {
       page,
       filter: {
@@ -33,41 +39,70 @@ const Episodes = () => {
     },
   });
 
-  const handleCharacterName = useCallback((value: string) => {
-    setEpisodes([]);
-    setPage(1);
+  const handleCharacterName = useCallback(
+    (value: string) => {
+      handleEpisodes([]);
+      setInfo({
+        ...info,
+        count: 0,
+        next: 0,
+        prev: 0,
+      });
 
-    setEpisodeName(value);
-  }, []);
+      setPage(orderById === 1 ? 1 : info.pages);
+      setEpisodeName(value);
+    },
+    [handleEpisodes, orderById, info],
+  );
 
   const handleConfirm = useCallback(
     (selectedOrderId: number) => {
       if (selectedOrderId !== orderById) {
-        setEpisodes([]);
-        setPage(selectedOrderId === 1 ? 1 : totalPages);
         setOrderById(selectedOrderId);
+
+        if (episodes.length === info.count) {
+          const orderedEpisodes = episodes.reverse();
+          handleEpisodes([...orderedEpisodes]);
+          return;
+        }
+
+        handleEpisodes([]);
+        setInfo({
+          ...info,
+          count: 0,
+          next: 0,
+          prev: 0,
+        });
+        setPage(selectedOrderId === 1 ? 1 : info.pages);
       }
     },
-    [orderById, totalPages],
+    [orderById, episodes, info, handleEpisodes],
   );
 
-  const handleRender = useCallback(async () => {
-    if (orderById === 1 && page !== totalPages) {
-      setPage(oldState => oldState + 1);
+  const handleRender = useCallback(() => {
+    if (orderById === 1 && info.next) {
+      setPage(info.next);
       return;
     }
 
-    if (orderById === 2 && page !== 1) {
-      setPage(oldState => oldState - 1);
+    if (orderById === 2 && info.prev) {
+      setPage(info.prev);
     }
-  }, [orderById, page, totalPages]);
+  }, [orderById, info.next, info.prev]);
 
   const handleRefreshSearch = useCallback(() => {
-    setEpisodes([]);
+    handleEpisodes([]);
+
+    setInfo({
+      ...info,
+      count: 0,
+      next: 0,
+      prev: 0,
+    });
     setEpisodeName('');
 
-    setPage(orderById === 1 ? 1 : totalPages);
-  }, [orderById, totalPages]);
+    setPage(orderById === 1 ? 1 : info.pages);
+  }, [orderById, handleEpisodes, info]);
 
   const handleOpenModal = useCallback(
     (id: string) => {
@@ -101,14 +136,20 @@ const Episodes = () => {
   useEffect(() => {
     if (data?.episodes) {
       if (data.episodes.info) {
-        setTotalPages(data.episodes.info.pages);
+        setInfo({
+          count: data.episodes.info.count,
+          next: data.episodes.info.next,
+          pages: data.episodes.info.pages,
+          prev: data.episodes.info.prev,
+        });
       }
 
       if (data.episodes.results) {
         const episodesList = [...data.episodes.results];
         const orderedEpisodes =
           orderById === 1 ? episodesList : episodesList.reverse();
-        setEpisodes(oldState => [...oldState, ...orderedEpisodes]);
+
+        handleEpisodes([...episodes, ...orderedEpisodes]);
       }
     }
   }, [data]);
@@ -140,7 +181,11 @@ const Episodes = () => {
         </Header>
       </TouchableWithoutFeedback>
 
-      {episodes && (
+      {!!loading && !episodes.length && (
+        <Loading isLoading={loading} size="large" isFullScreen />
+      )}
+
+      {episodes?.length > 0 && (
         <FlatList
           data={episodes}
           keyExtractor={item => String(item.id)}

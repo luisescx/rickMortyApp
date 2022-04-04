@@ -12,21 +12,27 @@ import {useTheme} from 'styled-components/native';
 import {useQuery} from '@apollo/client';
 import DetailModal from './DetailModal';
 import charactersQuery from '@/graphql/query/characters';
+import {useCharacters} from '@/hooks';
 
 const Characters = () => {
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [characterName, setCharacterName] = useState('');
-  const [characters, setCharacters] = useState<any[]>([]);
   const [orderById, setOrderById] = useState(1);
   const [visible, setIsVisible] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState<Character>(
     {} as Character,
   );
+  const [info, setInfo] = useState<Info>({
+    count: 0,
+    next: 0,
+    pages: 1,
+    prev: 0,
+  });
 
   const {colors} = useTheme();
+  const {characters, handleCharacters} = useCharacters();
 
-  const {data, loading} = useQuery(charactersQuery, {
+  const {data, loading} = useQuery<CharacterQuery>(charactersQuery, {
     variables: {
       page,
       filter: {
@@ -66,50 +72,88 @@ const Characters = () => {
     [handleOpenModal],
   );
 
-  const handleRender = useCallback(async () => {
-    if (orderById === 1 && page !== totalPages) {
-      setPage(oldState => oldState + 1);
+  const handleRender = useCallback(() => {
+    console.log(info.next);
+    if (orderById === 1 && info.next) {
+      setPage(info.next);
       return;
     }
 
-    if (orderById === 2 && page !== 1) {
-      setPage(oldState => oldState - 1);
+    if (orderById === 2 && info.prev) {
+      setPage(info.prev);
     }
-  }, [orderById, page, totalPages]);
+  }, [orderById, info.next, info.prev]);
 
-  const handleCharacterName = useCallback((value: string) => {
-    setCharacters([]);
-    setPage(1);
+  const handleCharacterName = useCallback(
+    (value: string) => {
+      handleCharacters([]);
+      setInfo({
+        ...info,
+        count: 0,
+        next: 0,
+        prev: 0,
+      });
 
-    setCharacterName(value);
-  }, []);
+      setPage(orderById === 1 ? 1 : info.pages);
+      setCharacterName(value);
+    },
+    [handleCharacters, orderById, info],
+  );
 
   const handleConfirm = useCallback(
     (selectedOrderId: number) => {
       if (selectedOrderId !== orderById) {
-        setCharacters([]);
-        setPage(selectedOrderId === 1 ? 1 : totalPages);
         setOrderById(selectedOrderId);
+
+        if (characters.length === info.count) {
+          const orderedCharacters = characters.reverse();
+          handleCharacters([...orderedCharacters]);
+          return;
+        }
+
+        handleCharacters([]);
+        setInfo({
+          ...info,
+          count: 0,
+          next: 0,
+          prev: 0,
+        });
+        setPage(selectedOrderId === 1 ? 1 : info.pages);
       }
     },
-    [orderById, totalPages],
+    [orderById, characters, handleCharacters, info],
   );
 
   const handleRefreshSearch = useCallback(() => {
-    setCharacters([]);
+    handleCharacters([]);
+    setInfo({
+      ...info,
+      count: 0,
+      next: 0,
+      prev: 0,
+    });
     setCharacterName('');
 
-    setPage(orderById === 1 ? 1 : totalPages);
-  }, [orderById, totalPages]);
+    setPage(orderById === 1 ? 1 : info.pages);
+  }, [orderById, info, handleCharacters]);
 
   useEffect(() => {
     if (data?.characters) {
       if (data.characters.info) {
-        setTotalPages(data.characters.info.pages);
+        setInfo({
+          count: data.characters.info.count,
+          next: data.characters.info.next,
+          pages: data.characters.info.pages,
+          prev: data.characters.info.prev,
+        });
       }
 
       if (data.characters.results) {
-        setCharacters(oldState => [...oldState, ...data.characters.results]);
+        const charactersList = [...data.characters.results];
+        const orderedCharacters =
+          orderById === 1 ? charactersList : charactersList.reverse();
+
+        handleCharacters([...characters, ...orderedCharacters]);
       }
     }
   }, [data]);
@@ -143,7 +187,11 @@ const Characters = () => {
         </Header>
       </TouchableWithoutFeedback>
 
-      {characters && (
+      {!!loading && !characters.length && (
+        <Loading isLoading={loading} size="large" isFullScreen />
+      )}
+
+      {characters?.length > 0 && (
         <FlatList
           data={characters}
           keyExtractor={item => String(item.id)}
