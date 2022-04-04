@@ -13,12 +13,17 @@ const paddingBottom = Platform.select({
   default: 0,
 });
 
-export const ModalContainer = styled.View`
+interface ModalContainerProps {
+  hasFlatlist: boolean;
+}
+
+export const ModalContainer = styled.View<ModalContainerProps>`
   background-color: ${({theme}) => theme.colors.primary};
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   max-height: 80%;
-  padding: 24px 24px ${paddingBottom + 24}px;
+  padding: ${({hasFlatlist}) =>
+    hasFlatlist ? '24px 0' : `24px 24px ${paddingBottom + 24}px`};
 `;
 
 export const Shape = styled.View`

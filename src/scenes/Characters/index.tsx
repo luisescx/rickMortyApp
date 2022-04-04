@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useState, useEffect} from 'react';
 import {
   FlatList,
   Keyboard,
@@ -7,85 +7,11 @@ import {
 } from 'react-native';
 import {Container, Header, HeaderContent, SyncButton, SyncIcon} from './styles';
 import RickMortyLogo from '@/assets/images/rick_morty_logo.svg';
-import {Input, CharacterCard, Filter, Loading} from '@/components';
+import {Input, CharacterCard, Filter, Loading, ModalStyled} from '@/components';
 import {useTheme} from 'styled-components/native';
-import {gql, useQuery} from '@apollo/client';
-import {useEffect} from 'react';
-
-const CHARACTERS = gql`
-  query characters($page: Int, $filter: FilterCharacter) {
-    characters(page: $page, filter: $filter) {
-      info {
-        count
-        pages
-      }
-      results {
-        id
-        name
-        image
-        location {
-          id
-          name
-        }
-        episode {
-          id
-          name
-        }
-      }
-    }
-  }
-`;
-
-export interface Character {
-  id: string;
-
-  name: string;
-
-  image: string;
-
-  location: Location;
-
-  episode: Episode[];
-}
-
-export interface CharacterQuery {
-  info: Info;
-
-  results: Character[];
-}
-
-export interface Location {
-  id: string;
-
-  name: string;
-}
-
-export interface Episode {
-  id: string;
-
-  name: string;
-
-  characters: Character[];
-
-  air_date: string;
-}
-
-export interface EpisodeQuery {
-  info: Info;
-
-  results: Episode[];
-}
-
-export interface Info {
-  count: number;
-
-  pages: number;
-}
-
-const ORDERS = [
-  {id: 1, label: 'Ascendant'},
-  {id: 2, label: 'Decrescent'},
-];
+import {useQuery} from '@apollo/client';
+import DetailModal from './DetailModal';
+import charactersQuery from '@/graphql/query/characters';
 
 const Characters = () => {
   const [page, setPage] = useState(1);
@@ -93,8 +19,14 @@ const Characters = () => {
   const [characterName, setCharacterName] = useState('');
   const [characters, setCharacters] = useState<any[]>([]);
   const [orderById, setOrderById] = useState(1);
+  const [visible, setIsVisible] = useState(false);
+  const [selectedCharacter, setSelectedCharacter] = useState<Character>(
+    {} as Character,
+  );
 
-  const {data, loading} = useQuery(CHARACTERS, {
+  const {colors} = useTheme();
+
+  const {data, loading} = useQuery(charactersQuery, {
     variables: {
       page,
       filter: {
@@ -103,13 +35,36 @@ const Characters = () => {
     },
   });
 
-  const {colors} = useTheme();
+  const handleOpenModal = useCallback(
+    (id: string) => {
+      const character = characters.find(ep => ep.id === id);
 
-  const renderItem = useCallback(({item, index}) => {
-    return (
-      <CharacterCard imageUri={item.image} name={item.name} index={index} />
-    );
+      if (character) {
+        setSelectedCharacter(character);
+        setIsVisible(true);
+      }
+    },
+    [characters],
+  );
+
+  const handleCloseModal = useCallback(() => {
+    setSelectedCharacter({} as Character);
+    setIsVisible(false);
   }, []);
+
+  const renderItem = useCallback(
+    ({item, index}) => {
+      return (
+        <CharacterCard
+          imageUri={item.image}
+          name={item.name}
+          index={index}
+          onPress={() => handleOpenModal(item.id)}
+        />
+      );
+    },
+    [handleOpenModal],
+  );
 
   const handleRender = useCallback(async () => {
     if (orderById === 1 && page !== totalPages) {
@@ -180,7 +135,6 @@ const Characters = () => {
             />
 
             <Filter
-              options={ORDERS}
               modalTitle="Sort by"
               defaultSelectedId={orderById}
               onConfirm={handleConfirm}
@@ -210,6 +164,13 @@ const Characters = () => {
           <SyncIcon name="refresh-cw" size={24} />
         </SyncButton>
       )}
+
+      <ModalStyled
+        visible={visible}
+        onDismiss={handleCloseModal}
+        hasFlatlist={true}>
+        <DetailModal character={selectedCharacter} />
+      </ModalStyled>
     </Container>
   );
 };

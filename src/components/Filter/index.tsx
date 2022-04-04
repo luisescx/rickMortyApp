@@ -2,23 +2,22 @@ import React, {useCallback, useState} from 'react';
 import {useTheme} from 'styled-components';
 import Icon from '../Icon';
 import ModalStyled from '../ModalStyled';
-import Picker, {PickerOptions} from '../Picker';
+import Picker from '../Picker';
 
 import {Container} from './styles';
 
 interface FilterProps {
-  options: PickerOptions[];
   modalTitle: string;
   defaultSelectedId: number;
   onConfirm: (selectedId: number) => void;
 }
 
-const Filter = ({
-  options,
-  modalTitle,
-  defaultSelectedId,
-  onConfirm,
-}: FilterProps) => {
+const ORDERS = [
+  {id: 1, label: 'Ascendant'},
+  {id: 2, label: 'Decrescent'},
+];
+
+const Filter = ({modalTitle, defaultSelectedId, onConfirm}: FilterProps) => {
   const [visible, setIsVisible] = useState(false);
   const [selectedId, setSelectedId] = useState<number>(defaultSelectedId);
   const {colors} = useTheme();
@@ -44,7 +43,7 @@ const Filter = ({
       <ModalStyled visible={visible} onDismiss={() => setIsVisible(false)}>
         <Picker
           title={modalTitle}
-          options={options}
+          options={ORDERS}
           onClose={() => setIsVisible(false)}
           onConfirm={handleConfirm}
           pickerSelectedId={selectedId}

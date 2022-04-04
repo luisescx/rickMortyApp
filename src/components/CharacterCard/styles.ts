@@ -7,6 +7,10 @@ const PADDING_HORIZONTAL = 16;
 const CARD_WIDTH = SCREEN_WIDTH / 2 - PADDING_HORIZONTAL * 2;
 const COMPONENT_WIDTH = Dimensions.get('window').width / 2 - PADDING_HORIZONTAL;
 
+interface StyleProps {
+  isOnModal: boolean;
+}
+
 interface ContainerProps {
   index: number;
   type: string;
@@ -27,9 +31,10 @@ export const Content = styled.View`
   padding: 0 0 0px;
 `;
 
-export const CharacterName = styled.Text`
+export const CharacterName = styled.Text<StyleProps>`
   font-family: ${({theme}) => theme.fonts.medium};
-  color: ${({theme}) => theme.colors.secondary};
+  color: ${({theme, isOnModal}) =>
+    isOnModal ? theme.colors.primary : theme.colors.secondary};
   font-size: 16px;
 `;
 
@@ -41,8 +46,9 @@ export const CharacterImage = styled(FastImage).attrs({
   border-radius: 8px;
 `;
 
-export const Footer = styled.View`
-  background: ${({theme}) => theme.colors.primary};
+export const Footer = styled.View<StyleProps>`
+  background: ${({theme, isOnModal}) =>
+    isOnModal ? theme.colors.secondary : theme.colors.primary};
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
   width: 100%;

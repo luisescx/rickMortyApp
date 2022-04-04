@@ -12,11 +12,18 @@ interface Props extends TouchableOpacityProps {
   name: string;
   imageUri: string;
   index: number;
+  isOnModal?: boolean;
 }
 
-const CharacterCard = ({name, imageUri, index, ...rest}: Props) => {
+const CharacterCard = ({
+  name,
+  imageUri,
+  index,
+  isOnModal = false,
+  ...rest
+}: Props) => {
   return (
-    <Container {...rest} activeOpacity={0.7} index={index}>
+    <Container {...rest} activeOpacity={isOnModal ? 1 : 0.7} index={index}>
       <Content>
         <CharacterImage
           source={{
@@ -25,8 +32,8 @@ const CharacterCard = ({name, imageUri, index, ...rest}: Props) => {
         />
       </Content>
 
-      <Footer>
-        <CharacterName>{name}</CharacterName>
+      <Footer isOnModal={isOnModal}>
+        <CharacterName isOnModal={isOnModal}>{name}</CharacterName>
       </Footer>
     </Container>
   );

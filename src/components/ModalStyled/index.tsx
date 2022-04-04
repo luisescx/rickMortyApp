@@ -9,21 +9,19 @@ interface ModalStyledProps
   > {
   visible: boolean;
   onDismiss: () => void;
+  hasFlatlist?: boolean;
 }
 
 const ModalStyled: React.FC<ModalStyledProps> = ({
   visible,
   onDismiss,
   children,
+  hasFlatlist = false,
   ...rest
 }) => {
   return (
-    <Modal
-      visible={visible}
-      onDismiss={onDismiss}
-      style={{justifyContent: 'flex-end', margin: 0}}
-      {...rest}>
-      <ModalContainer>
+    <Modal visible={visible} onDismiss={onDismiss} style={{}} {...rest}>
+      <ModalContainer hasFlatlist={hasFlatlist}>
         <Shape />
 
         {children}
