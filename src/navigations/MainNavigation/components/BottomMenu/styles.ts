@@ -16,11 +16,3 @@ export const Title = styled.Text<TabTitleProps>`
   font-family: ${({theme}) => theme.fonts.regular};
   font-size: 12px;
 `;
-
-export const BottomLine = styled.View`
-  background-color: ${({theme}) => theme.colors.errorLight};
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  height: 3px;
-  width: 68px;
-`;
