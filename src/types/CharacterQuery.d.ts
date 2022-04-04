@@ -1,5 +1,6 @@
-export interface CharacterQuery {
-  info: Info;
-
-  results: Character[];
+interface CharacterQuery {
+  characters: {
+    info: Info;
+    results: Character[];
+  };
 }

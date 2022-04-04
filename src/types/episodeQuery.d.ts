@@ -1,5 +1,6 @@
-export interface EpisodeQuery {
-  info: Info;
-
-  results: Episode[];
+interface EpisodeQuery {
+  episodes: {
+    info: Info;
+    results: Episode[];
+  };
 }
