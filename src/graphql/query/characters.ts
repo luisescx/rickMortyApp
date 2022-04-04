@@ -6,6 +6,8 @@ const charactersQuery = gql`
       info {
         count
         pages
+        next
+        prev
       }
       results {
         id

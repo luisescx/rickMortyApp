@@ -6,6 +6,8 @@ const episodesQuery = gql`
       info {
         count
         pages
+        next
+        prev
       }
       results {
         id
